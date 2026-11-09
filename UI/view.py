@@ -1,5 +1,6 @@
 import flet as ft
 from UI.alert import AlertManager
+from model.libro_DTO import Libro
 
 '''
     VIEW:
@@ -36,10 +37,24 @@ class View:
         self.txt_titolo = ft.Text(value="Biblioteche di Torino", size=38, weight=ft.FontWeight.BOLD)
 
         # --- Sezione 2: Filtraggio ---
-        # TODO
+        self.drop_biblioteche = ft.Dropdown(
+            label="Biblioteca",
+            width=350,
+            options=[],
+            on_select=self.controller.on_biblioteca_selezionata
+        )
+
+        self.drop_generi = ft.Dropdown(
+            label="Genere",
+            width=250,
+            options=[],
+            on_select=self.controller.on_genere_selezionato
+        )
 
         # Sezione 3: Libri
-        # TODO
+        self.btn_mostra = ft.Button(content="Mostra Libri",
+                                    on_click=self.controller.mostra_libri)
+        self.listview_libri = ft.ListView(height=400, spacing=5)
 
         # --- Toggle Tema ---
         self.toggle_cambia_tema = ft.Switch(label="Tema scuro", value=True, on_change=self.cambia_tema)
@@ -53,14 +68,30 @@ class View:
             ft.Divider(),
 
             # Sezione 2: Filtraggio
-            # TODO
+            ft.Row([self.drop_biblioteche, self.drop_generi], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Divider(),
 
             # Sezione 3: Libri
-            # TODO
+
+            self.btn_mostra,
+            self.listview_libri
         )
 
         self.page.scroll = "adaptive"
         self.page.update()
+
+        self.controller.popola_dropdown()
+
+
+
+    def mostra_libri_in_view(self, libri_filtrati):
+        self.listview_libri.controls.clear()
+
+        for libro in libri_filtrati:
+            self.listview_libri.controls.append(ft.Text(f"{libro.id} - {libro.titolo} - {libro.autore} - {libro.anno_pubblicazione}"))
+        self.page.update()
+
+
 
     def cambia_tema(self, e):
         """ Cambia tema scuro/chiaro """
